@@ -76,3 +76,7 @@
 
 [push]
 	default = matching
+
+[user]
+    email = nicolasclaudon@gmail.com
+    name = Nicolas Claudon
