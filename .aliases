@@ -69,3 +69,6 @@ alias aliases="$EDITOR $HOME/.aliases"
 
 # Open exports
 alias exports="$EDITOR $HOME/.exports"
+
+# delete directories
+alias rf="rm -rf"
