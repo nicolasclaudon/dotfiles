@@ -1,0 +1,25 @@
+s,v
+k,v
+,V
+git,v
+let g:multi_cursor_next_key='<C-n>'let g:multi_cursor_prev_key='<C-p>'let g:multi_cursor_skip_key='<C-x>'let g:multi_cursor_quit_key='<Esc>',v
+vim-less,v
+vim-multiple-cursors,v
+vim-css3-syntax,v
+undotree,v
+tagbar,v
+syntastic,v
+vim-scala,v
+vim-markdown,v
+gianu,v
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting,V
+o,v
+c,v
+i,v
+n,v
+/,v
+r,v
+e,v
+U,v
+zshenv,v
+bash_profile,v
