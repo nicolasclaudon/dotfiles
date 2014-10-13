@@ -43,8 +43,16 @@ plugins=(git brew ruby debian docker mvn scala colored-man colorize extract hist
 
 source $ZSH/oh-my-zsh.sh
 
+
 # Customize to your needs...
 source $HOME/.exports
 source $HOME/.aliases
 source $HOME/.functions
 export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH
+
+#export RBENV_ROOT="${HOME}/.rbenv"
+
+#if [ -d "${RBENV_ROOT}" ]; then
+    #export PATH="${RBENV_ROOT}/bin:${PATH}"
+    #eval "$(rbenv init -)"
+#fi

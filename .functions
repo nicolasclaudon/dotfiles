@@ -311,3 +311,9 @@ function np() {
 function tre() {
 	tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | less -FRNX
 }
+
+function dstop() { docker stop $(docker ps -q); }
+# delete dockers container
+function drm() { docker rm $(docker ps -q -a); }
+# delete docker images
+function dri() { docker rmi $(docker images -q); }

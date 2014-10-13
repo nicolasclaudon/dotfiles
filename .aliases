@@ -72,3 +72,11 @@ alias exports="$EDITOR $HOME/.exports"
 
 # delete directories
 alias rf="rm -rf"
+
+# docker aliases
+# get ip adress of ID or name
+alias dip="docker inspect --format '{{ .NetworkSettings.IPAddress }}'"
+# run docker in daemon
+alias dkd="docker run -d -P"
+# run docker in interactive
+alias dki="docker run -t -i -P"
