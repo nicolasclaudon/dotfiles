@@ -1,0 +1,19 @@
+# Global settings
+Host *
+  AddKeysToAgent yes
+  UseKeychain yes
+  IdentityFile ~/.ssh/id_ed25519
+  ServerAliveInterval 60
+  ServerAliveCountMax 3
+
+# GitHub
+Host github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519
+
+# Add other hosts as needed
+# Host myserver
+#   HostName example.com
+#   User nicolas
+#   IdentityFile ~/.ssh/id_rsa
