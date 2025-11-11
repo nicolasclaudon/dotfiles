@@ -1,6 +1,9 @@
 # Zinit setup
 source "${ZINIT_HOME}/zinit.zsh"
 
+# Corporate certificate bundle
+export NODE_EXTRA_CA_CERTS="$HOME/.local/share/certificates/root.pem"
+
 # Disable unnecessary features
 skip_global_compinit=1
 

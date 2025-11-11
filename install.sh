@@ -16,6 +16,18 @@ backup_if_exists() {
   fi
 }
 
+# Remove nested symlinks within dotfiles directories
+clean_nested_symlinks() {
+  local target_dir="$1"
+  local dir_name=$(basename "$target_dir")
+
+  # Check for self-referential symlink (e.g., ghostty/ghostty or nvim/nvim)
+  if [ -L "$target_dir/$dir_name" ]; then
+    echo "Removing nested symlink: $target_dir/$dir_name"
+    rm "$target_dir/$dir_name"
+  fi
+}
+
 # Backup existing configs
 backup_if_exists ~/.zshenv
 backup_if_exists ~/.zprofile
@@ -25,12 +37,14 @@ backup_if_exists ~/.config/starship.toml
 backup_if_exists ~/.config/nvim
 backup_if_exists ~/.config/tmux
 backup_if_exists ~/.ssh/config
+backup_if_exists ~/.gitconfig
 
 # Create symlinks
 ln -sf "$DOTFILES_DIR/zsh/.zshenv" ~/.zshenv
 ln -sf "$DOTFILES_DIR/zsh/.zprofile" ~/.zprofile
 ln -sf "$DOTFILES_DIR/zsh/.zshrc" ~/.zshrc
 ln -sf "$DOTFILES_DIR/ssh/config" ~/.ssh/config
+ln -sf "$DOTFILES_DIR/git/config" ~/.gitconfig
 ln -sf "$DOTFILES_DIR/ghostty" ~/.config/ghostty
 ln -sf "$DOTFILES_DIR/starship/starship.toml" ~/.config/starship.toml
 ln -sf "$DOTFILES_DIR/nvim" ~/.config/nvim
@@ -45,6 +59,15 @@ if [ -f ~/.ssh/id_ed25519 ]; then
 else
   echo "⚠ No SSH key found at ~/.ssh/id_ed25519"
   echo "Generate one with: ssh-keygen -t ed25519 -C 'your@email.com'"
+fi
+
+# Prompt for git user info if not set
+if ! git config --global user.name >/dev/null 2>&1; then
+  echo "Git user info not configured."
+  read -p "Enter your name: " git_name
+  read -p "Enter your email: " git_email
+  git config --global user.name "$git_name"
+  git config --global user.email "$git_email"
 fi
 
 echo "✓ Dotfiles installed!"
