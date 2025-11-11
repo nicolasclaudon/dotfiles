@@ -23,6 +23,7 @@ backup_if_exists ~/.zshrc
 backup_if_exists ~/.config/ghostty
 backup_if_exists ~/.config/starship.toml
 backup_if_exists ~/.config/nvim
+backup_if_exists ~/.config/tmux
 backup_if_exists ~/.ssh/config
 
 # Create symlinks
@@ -33,6 +34,7 @@ ln -sf "$DOTFILES_DIR/ssh/config" ~/.ssh/config
 ln -sf "$DOTFILES_DIR/ghostty" ~/.config/ghostty
 ln -sf "$DOTFILES_DIR/starship/starship.toml" ~/.config/starship.toml
 ln -sf "$DOTFILES_DIR/nvim" ~/.config/nvim
+ln -sf "$DOTFILES_DIR/tmux" ~/.config/tmux
 
 chmod 600 ~/.ssh/config
 
