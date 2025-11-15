@@ -1,5 +1,6 @@
 # Zinit setup
-source "${ZINIT_HOME}/zinit.zsh"
+#source "${ZINIT_HOME}/zinit.zsh"
+source $HOMEBREW_PREFIX/opt/zinit/zinit.zsh
 
 # Corporate certificate bundle
 export NODE_EXTRA_CA_CERTS="$HOME/.local/share/certificates/root.pem"
@@ -57,14 +58,19 @@ zinit snippet /dev/null
 zinit ice wait lucid
 zinit light zsh-users/zsh-syntax-highlighting
 
+# fnm
+export PATH=/home/$USER/.fnm:$PATH
+eval "$(fnm env --use-on-cd --version-file-strategy=recursive)"
+
 # Aliases
 alias ls='eza'
 alias ll='eza -la'
 alias cat='bat'
-alias cd='z'
 alias vim='nvim'
 alias vi='nvim'
 alias grep='rg'
 
 # Create cache directory
 mkdir -p ~/.zsh/cache
+### End of Zinit's installer chunk
+### End of Zinit's installer chunk

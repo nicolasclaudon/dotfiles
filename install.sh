@@ -52,6 +52,8 @@ ln -sf "$DOTFILES_DIR/tmux" ~/.config/tmux
 
 chmod 600 ~/.ssh/config
 
+bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
+
 # Add SSH key to keychain (if exists)
 if [ -f ~/.ssh/id_ed25519 ]; then
   echo "Adding SSH key to keychain..."
@@ -59,6 +61,7 @@ if [ -f ~/.ssh/id_ed25519 ]; then
 else
   echo "⚠ No SSH key found at ~/.ssh/id_ed25519"
   echo "Generate one with: ssh-keygen -t ed25519 -C 'your@email.com'"
+  ssh-keygen -t ed25519
 fi
 
 # Prompt for git user info if not set
@@ -70,5 +73,11 @@ if ! git config --global user.name >/dev/null 2>&1; then
   git config --global user.email "$git_email"
 fi
 
+brew install zinit neovim starship eza bat fzf zoxide ripgrep tmux
+brew install fnm pnpm #install node
+brew install uv       #for python
+brew install ghostty  #for terminal
+
+fnm install --lts #install default node environment
 echo "✓ Dotfiles installed!"
 echo "Restart your terminal to apply changes."
