@@ -1,5 +1,6 @@
 # Zinit setup
-source "${ZINIT_HOME}/zinit.zsh"
+#source "${ZINIT_HOME}/zinit.zsh"
+source $HOMEBREW_PREFIX/opt/zinit/zinit.zsh
 
 # Corporate certificate bundle
 export NODE_EXTRA_CA_CERTS="$HOME/.local/share/certificates/root.pem"
@@ -25,8 +26,7 @@ zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
 # History
-#HISTFILE=~/.zsh_history
-HISTFILE="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/history"
+HISTFILE=~/.zsh_history
 HISTSIZE=10000
 SAVEHIST=10000
 setopt SHARE_HISTORY
@@ -54,32 +54,23 @@ zinit snippet /dev/null
 zinit ice wait lucid atload'eval "$(fzf --zsh)"'
 zinit snippet /dev/null
 
-# FNM (Fast Node Manager)
-zinit ice wait lucid atload'eval "$(fnm env --use-on-cd)"'
-zinit snippet /dev/null
-
 # Syntax highlighting LAST
 zinit ice wait lucid
 zinit light zsh-users/zsh-syntax-highlighting
 
+# fnm
+export PATH=/home/$USER/.fnm:$PATH
+eval "$(fnm env --use-on-cd --version-file-strategy=recursive)"
 
-#
-# Load aliases
-[[ -f ~/.zaliases ]] && source ~/.zaliases
-
-function cx() {
-    builtin cd "$@" && eza --icons --group-directories-first
-}
+# Aliases
+alias ls='eza'
+alias ll='eza -la'
+alias cat='bat'
+alias vim='nvim'
+alias vi='nvim'
+alias grep='rg'
 
 # Create cache directory
 mkdir -p ~/.zsh/cache
-
-# FZF directory navigation (replacement for Alt+C)
-alias fcd='cd "$(fd --type d | fzf)"'
-fcd-widget() {
-  local dir
-  dir=$(zoxide query -l 2>/dev/null | fzf) && cd "$dir"
-  zle reset-prompt
-}
-zle -N fcd-widget
-bindkey '^F' fcd-widget
+### End of Zinit's installer chunk
+### End of Zinit's installer chunk
