@@ -1,0 +1,21 @@
+# Aliases
+alias ls='eza --icons=always --group-directories-first'
+alias ll='eza -la'
+alias l='eza -l'
+alias lt='eza --tree --level=2 --long --icons --git'
+alias cat='bat'
+#alias cd='z'
+alias vim='nvim'
+alias vi='nvim'
+alias grep='rg'
+alias rf="rm -rf"
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+
+# FZF aliases
+alias fzfp='fzf --preview "bat --color=always --style=numbers {}"'
+alias fcd='cd $(find . -type d | fzf)'
+alias fvim='nvim $(fzf)'
+alias fcd='cd "$(fd --type d | fzf)"'
+alias zf='__zoxide_zi'

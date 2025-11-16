@@ -16,22 +16,11 @@ backup_if_exists() {
   fi
 }
 
-# Remove nested symlinks within dotfiles directories
-clean_nested_symlinks() {
-  local target_dir="$1"
-  local dir_name=$(basename "$target_dir")
-
-  # Check for self-referential symlink (e.g., ghostty/ghostty or nvim/nvim)
-  if [ -L "$target_dir/$dir_name" ]; then
-    echo "Removing nested symlink: $target_dir/$dir_name"
-    rm "$target_dir/$dir_name"
-  fi
-}
-
 # Backup existing configs
 backup_if_exists ~/.zshenv
 backup_if_exists ~/.zprofile
 backup_if_exists ~/.zshrc
+backup_if_exists ~/.zaliases
 backup_if_exists ~/.config/ghostty
 backup_if_exists ~/.config/starship.toml
 backup_if_exists ~/.config/nvim
@@ -43,6 +32,7 @@ backup_if_exists ~/.gitconfig
 ln -sf "$DOTFILES_DIR/zsh/.zshenv" ~/.zshenv
 ln -sf "$DOTFILES_DIR/zsh/.zprofile" ~/.zprofile
 ln -sf "$DOTFILES_DIR/zsh/.zshrc" ~/.zshrc
+ln -sf "$DOTFILES_DIR/zsh/.zaliases" ~/.zaliases
 ln -sf "$DOTFILES_DIR/ssh/config" ~/.ssh/config
 ln -sf "$DOTFILES_DIR/git/config" ~/.gitconfig
 ln -sf "$DOTFILES_DIR/ghostty" ~/.config/ghostty

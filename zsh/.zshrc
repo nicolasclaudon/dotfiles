@@ -25,7 +25,8 @@ zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 
 # History
-HISTFILE=~/.zsh_history
+#HISTFILE=~/.zsh_history
+HISTFILE="${XDG_DATA_HOME:-$HOME/.local/share}/zsh/history"
 HISTSIZE=10000
 SAVEHIST=10000
 setopt SHARE_HISTORY
@@ -53,18 +54,32 @@ zinit snippet /dev/null
 zinit ice wait lucid atload'eval "$(fzf --zsh)"'
 zinit snippet /dev/null
 
+# FNM (Fast Node Manager)
+zinit ice wait lucid atload'eval "$(fnm env --use-on-cd)"'
+zinit snippet /dev/null
+
 # Syntax highlighting LAST
 zinit ice wait lucid
 zinit light zsh-users/zsh-syntax-highlighting
 
-# Aliases
-alias ls='eza'
-alias ll='eza -la'
-alias cat='bat'
-alias cd='z'
-alias vim='nvim'
-alias vi='nvim'
-alias grep='rg'
+
+#
+# Load aliases
+[[ -f ~/.zaliases ]] && source ~/.zaliases
+
+function cx() {
+    builtin cd "$@" && eza --icons --group-directories-first
+}
 
 # Create cache directory
 mkdir -p ~/.zsh/cache
+
+# FZF directory navigation (replacement for Alt+C)
+alias fcd='cd "$(fd --type d | fzf)"'
+fcd-widget() {
+  local dir
+  dir=$(zoxide query -l 2>/dev/null | fzf) && cd "$dir"
+  zle reset-prompt
+}
+zle -N fcd-widget
+bindkey '^F' fcd-widget
