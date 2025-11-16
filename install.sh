@@ -69,5 +69,8 @@ brew install uv       #for python
 brew install ghostty  #for terminal
 
 fnm install --lts #install default node environment
+
+brew install claude
+brew install claude-code
 echo "✓ Dotfiles installed!"
 echo "Restart your terminal to apply changes."
