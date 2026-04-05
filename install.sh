@@ -26,7 +26,51 @@ brew install --cask \
   obsidian \
   1password \
   discord \
-  ──────────
+  vlc \
+  keka
+
+# ── Zinit ─────────────────────────────────────────────────────────────────────
+if [ ! -f "$HOMEBREW_PREFIX/opt/zinit/zinit.zsh" ]; then
+  bash -c "$(curl --fail --show-error --silent --location \
+    https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
+fi
+
+# ── Directories ───────────────────────────────────────────────────────────────
+mkdir -p \
+  ~/.config/zsh \
+  ~/.local/share/zsh \
+  ~/.local/share/gem \
+  ~/.local/share/sonar \
+  ~/.cache/zsh \
+  ~/.cache/npm \
+  ~/.cache/gem \
+  ~/.local/state \
+  ~/.ssh
+
+chmod 700 ~/.ssh
+
+# ── Backups ───────────────────────────────────────────────────────────────────
+backup_if_exists() {
+  if [ -e "$1" ] && [ ! -L "$1" ]; then
+    echo "Backing up $1"
+    mv "$1" "$1.backup"
+  fi
+}
+
+backup_if_exists ~/.zshenv
+backup_if_exists ~/.config/zsh/.zshrc
+backup_if_exists ~/.config/zsh/.zprofile
+backup_if_exists ~/.config/zsh/.zaliases
+backup_if_exists ~/.config/zsh/functions.zsh
+backup_if_exists ~/.config/nvim
+backup_if_exists ~/.config/tmux
+backup_if_exists ~/.config/starship.toml
+backup_if_exists ~/.ssh/config
+backup_if_exists ~/.gitconfig
+backup_if_exists ~/.docker/config.json
+backup_if_exists ~/.docker/daemon.json
+
+# ── Symlinks ──────────────────────────────────────────────────────────────────
 ln -sf "$DOTFILES_DIR/zsh/.zshenv" ~/.zshenv
 ln -sf "$DOTFILES_DIR/zsh/.zshrc" ~/.config/zsh/.zshrc
 ln -sf "$DOTFILES_DIR/zsh/.zprofile" ~/.config/zsh/.zprofile
@@ -59,58 +103,12 @@ if ! git config --global user.name &>/dev/null; then
   git config --global user.email "$git_email"
 fi
 
-echo "✓ Dotfiles installed — restart your terminal"──────────────────────────
-backup_if_exists() {
-  if [ -e "$1" ] && [ ! -L "$1" ]; then
-    echo "Backing up $1"
-    mv "$1" "$1.backup"
-  fi
-}
-
-# ── Backups ───────────────────────────────────────────────────────────────────
-backup_if_exists ~/.zshenv
-backup_if_exists ~/.config/zsh/.zshrc
-backup_if_exists ~/.config/zsh/.zprofile
-backup_if_exists ~/.config/zsh/.zaliases
-backup_if_exists ~/.config/zsh/functions.zsh
-backup_if_exists ~/.config/nvim
-backup_if_exists ~/.config/tmux
-backup_if_exists ~/.config/ghostty
-backup_if_exists ~/.config/starship.toml
-backup_if_exists ~/.ssh/config
-backup_if_exists ~/.gitconfig
-backup_if_exists ~/.docker/config.json
-backup_if_exists ~/.docker/daemon.json
-
-# ── Symlinks ──────────────────────────────────────────────────────── signal \
-vlc \
-  keka
-
-# ── Zinit ─────────────────────────────────────────────────────────────────────
-if [ ! -f "$HOMEBREW_PREFIX/opt/zinit/zinit.zsh" ]; then
-  bash -c "$(curl --fail --show-error --silent --location \
-    https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
-fi
-
 # ── fnm — default Node ────────────────────────────────────────────────────────
 eval "$(fnm env)"
 fnm install --lts
+fnm use lts-latest
 
-# ── Directories ───────────────────────────────────────────────────────────────
-mkdir -p \
-  ~/.config/zsh \
-  ~/.local/share/zsh \
-  ~/.local/share/gem \
-  ~/.local/share/sonar \
-  ~/.cache/zsh \
-  ~/.cache/npm \
-  ~/.cache/gem \
-  ~/.local/state \
-  ~/.ssh
+# ── Global npm packages ───────────────────────────────────────────────────────
+npm install -g @anthropic-ai/claude-code
 
-chmod 700 ~/.ssh
-
-brew install claude
-brew install claude-code
-
-# ── Backup function ─────────────────────────────────
+echo "✓ Dotfiles installed — restart your terminal"
