@@ -118,6 +118,5 @@
   },
   "alwaysThinkingEnabled": true,
   "promptSuggestionEnabled": false,
-  "autoUpdatesChannel": "latest",
-  "model": "haiku"
+  "autoUpdatesChannel": "latest"
 }
