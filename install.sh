@@ -5,7 +5,7 @@ DOTFILES_DIR="$HOME/dotfiles"
 echo "Installing dotfiles from $DOTFILES_DIR..."
 
 # Create directories
-mkdir -p ~/.config ~/.local/share ~/.cache ~/.local/state ~/.ssh
+mkdir -p ~/.config/zsh ~/.local/share ~/.cache ~/.local/state ~/.ssh
 chmod 700 ~/.ssh
 
 # Backup function
@@ -16,13 +16,15 @@ backup_if_exists() {
   fi
 }
 
+mkdir -p $XDG_DATA_HOME/zsh
+mkdir -p $XDG_CACHE_HOME/zsh
+
 # Backup existing configs
 backup_if_exists ~/.zshenv
-backup_if_exists ~/.zprofile
-backup_if_exists ~/.zshrc
-backup_if_exists ~/.zaliases
-backup_if_exists ~/.config/ghostty
-backup_if_exists ~/.config/starship.toml
+backup_if_exists ~/.config/zsh/.zshrc
+backup_if_exists ~/.config/zsh/.zprofile
+backup_if_exists ~/.config/zsh/.zaliases
+backup_if_exists ~/.config/zsh/functions.zsh
 backup_if_exists ~/.config/nvim
 backup_if_exists ~/.config/tmux
 backup_if_exists ~/.ssh/config
@@ -30,9 +32,10 @@ backup_if_exists ~/.gitconfig
 
 # Create symlinks
 ln -sf "$DOTFILES_DIR/zsh/.zshenv" ~/.zshenv
-ln -sf "$DOTFILES_DIR/zsh/.zprofile" ~/.zprofile
-ln -sf "$DOTFILES_DIR/zsh/.zshrc" ~/.zshrc
-ln -sf "$DOTFILES_DIR/zsh/.zaliases" ~/.zaliases
+ln -sf "$DOTFILES_DIR/zsh/.zshrc" ~/.config/zsh/.zshrc
+ln -sf "$DOTFILES_DIR/zsh/.zprofile" ~/.config/zsh/.zprofile
+ln -sf "$DOTFILES_DIR/zsh/.zaliases" ~/.config/zsh/.zaliases
+ln -sf "$DOTFILES_DIR/zsh/functions.zsh" ~/.config/zsh/functions.zsh
 ln -sf "$DOTFILES_DIR/ssh/config" ~/.ssh/config
 ln -sf "$DOTFILES_DIR/git/config" ~/.gitconfig
 ln -sf "$DOTFILES_DIR/ghostty" ~/.config/ghostty

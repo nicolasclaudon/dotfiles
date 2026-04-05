@@ -7,11 +7,13 @@ alias cat='bat'
 #alias cd='z'
 alias vim='nvim'
 alias vi='nvim'
-alias grep='rg'
+#alias grep='rg'
 alias rf="rm -rf"
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
+
+alias gs="git status"
 
 # FZF aliases
 alias fzfp='fzf --preview "bat --color=always --style=numbers {}"'
@@ -19,3 +21,20 @@ alias fcd='cd $(find . -type d | fzf)'
 alias fvim='nvim $(fzf)'
 alias fcd='cd "$(fd --type d | fzf)"'
 alias zf='__zoxide_zi'
+alias cls='clear'
+
+# Git Aliases
+alias gs='git status'
+alias gst='git status'
+alias gb='git branch'
+alias gco='git checkout'
+alias ga='git add'
+alias gc='git commit'
+alias gcm='git commit -m'
+alias gpm='git push origin main'
+alias gp='git push'
+
+# cls
+alias la="ls -la"
+alias ll="ls -l"
+alias zaliases="vi ~/.zaliases"
