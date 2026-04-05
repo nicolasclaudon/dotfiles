@@ -17,7 +17,8 @@ brew install \
   eza bat fzf zoxide ripgrep \
   tmux lazygit gh \
   fnm pnpm uv \
-  terraform tflint
+  terraform tflint \
+  1password-cli
 
 # ── Casks ─────────────────────────────────────────────────────────────────────
 brew install --cask \
