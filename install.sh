@@ -110,4 +110,7 @@ mkdir -p \
 
 chmod 700 ~/.ssh
 
+brew install claude
+brew install claude-code
+
 # ── Backup function ─────────────────────────────────
