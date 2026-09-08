@@ -5,25 +5,21 @@ Include ~/.orbstack/ssh/config
 
 # Global settings
 Host *
-  AddKeysToAgent yes
-  UseKeychain yes
-  IdentityFile ~/.ssh/id_ed25519
+  # Use the 1Password SSH agent — keys live in your vault, approved via Touch ID.
+  IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
   ServerAliveInterval 60
   ServerAliveCountMax 3
 
 Host mimir
   User nicolasclaudon
-  IdentityFile ~/.ssh/id_ed25519
 
 Host mini
   User nico
-  IdentityFile ~/.ssh/id_ed25519
 
 # GitHub
 Host github.com
   HostName github.com
   User git
-  IdentityFile ~/.ssh/id_ed25519
 
 # Add other hosts as needed
 # Host myserver
