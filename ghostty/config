@@ -1,0 +1,50 @@
+# ~/.config/ghostty/config
+# Simple Ghostty config — lean defaults for a shell/dev + tmux + SSH workflow.
+# Reload after editing with Cmd+Shift+,  (or quit & reopen Ghostty).
+# See every option:  ghostty +show-config --default --docs | less
+#
+# NOTE: Ghostty does NOT support trailing inline comments. A "#" after a value
+# is treated as part of the value, so keep all comments on their own line.
+
+# --- Appearance ---
+# Browse others with:  ghostty +list-themes
+theme = catppuccin-frappe.conf
+
+# Falls back to system monospace if not installed.
+font-family = JetBrains Mono
+font-size = 14
+# Slightly bolder glyphs, easier to read on Retina.
+font-thicken = true
+
+window-padding-x = 8
+window-padding-y = 8
+background-opacity = 1.0
+cursor-style = block
+mouse-hide-while-typing = true
+
+# --- Scrollback ---
+# ~10 MB of history per surface.
+scrollback-limit = 10000000
+
+# --- macOS behavior ---
+# Let the Option key send Alt, so Alt+B / Alt+F move word-by-word
+# (and Alt+Backspace deletes a word).
+macos-option-as-alt = true
+
+# Don't prompt when closing a tab/window.
+confirm-close-surface = false
+
+# --- Notes ---
+# Ctrl-based readline keys pass straight through to your shell:
+#   Ctrl+A = start of line     Ctrl+E = end of line
+#   Ctrl+K = kill to end       Ctrl+U = kill to start     Ctrl+W = delete word
+# Ghostty's own shortcuts use Cmd (⌘), so they never clash.
+# See the full default keymap with:  ghostty +list-keybinds
+
+# Add personal keybindings below, e.g.:
+# keybind = cmd+shift+enter=toggle_fullscreen
+
+# Make Alt+N type a tilde (~) again, since macos-option-as-alt
+# otherwise swallows the macOS dead-key sequence.
+keybind = alt+n=text:~
+
