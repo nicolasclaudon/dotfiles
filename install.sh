@@ -1,114 +1,154 @@
 #!/bin/bash
 set -e
 
-DOTFILES_DIR="$HOME/dotfiles"
+# ── Options ───────────────────────────────────────────────────────────────────
+LINKS_ONLY=false
+for arg in "$@"; do
+  case "$arg" in
+    -l | --links-only)
+      LINKS_ONLY=true
+      ;;
+    -h | --help)
+      echo "Usage: install.sh [--links-only|-l]"
+      echo "  --links-only, -l   Only create symlinks (skip brew, ssh, fnm, npm)"
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $arg" >&2
+      echo "Usage: install.sh [--links-only|-l]" >&2
+      exit 1
+      ;;
+  esac
+done
+
+# Resolve the dotfiles directory from this script's location, so it works
+# no matter where the repo is cloned.
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 echo "Installing dotfiles from $DOTFILES_DIR..."
 
+if [ "$LINKS_ONLY" = true ]; then
+  echo "(links-only mode — skipping brew, ssh, fnm, npm)"
+fi
+
 # ── Homebrew ──────────────────────────────────────────────────────────────────
-if ! command -v brew &>/dev/null; then
+if [ "$LINKS_ONLY" = false ] && ! command -v brew &>/dev/null; then
   echo "Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   eval "$(/opt/homebrew/bin/brew shellenv)"
 fi
 
-# ── Formulae ──────────────────────────────────────────────────────────────────
-brew install \
-  zinit neovim starship \
-  eza bat fzf zoxide ripgrep \
-  tmux lazygit gh \
-  fnm pnpm uv \
-  terraform tflint \
-  1password-cli
+if [ "$LINKS_ONLY" = false ]; then
+  # ── Formulae ──────────────────────────────────────────────────────────────────
+  brew install \
+    fish neovim \
+    eza bat fd fzf zoxide ripgrep \
+    dust duf ncdu procs sd git-delta \
+    jq yq glow tealdeer btop yazi \
+    tmux lazygit gh \
+    fnm pnpm uv \
+    terraform tflint \
+    himalaya fabric-ai \
+    1password-cli
 
-# ── Casks ─────────────────────────────────────────────────────────────────────
-brew install --cask \
-  orbstack \
-  obsidian \
-  1password \
-  discord \
-  vlc \
-  keka
+  # ── Casks ─────────────────────────────────────────────────────────────────────
+  brew install --cask \
+    orbstack \
+    obsidian \
+    1password \
+    discord \
+    vlc \
+    keka
 
-# ── Zinit ─────────────────────────────────────────────────────────────────────
-if [ ! -f "$HOMEBREW_PREFIX/opt/zinit/zinit.zsh" ]; then
-  bash -c "$(curl --fail --show-error --silent --location \
-    https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
+  # ── Default shell — fish ──────────────────────────────────────────────────────
+  FISH_PATH="$(command -v fish)"
+  if [ -n "$FISH_PATH" ]; then
+    if ! grep -qx "$FISH_PATH" /etc/shells; then
+      echo "Adding $FISH_PATH to /etc/shells..."
+      echo "$FISH_PATH" | sudo tee -a /etc/shells >/dev/null
+    fi
+    if [ "$SHELL" != "$FISH_PATH" ]; then
+      echo "Changing default shell to fish..."
+      chsh -s "$FISH_PATH"
+    fi
+  fi
 fi
 
 # ── Directories ───────────────────────────────────────────────────────────────
 mkdir -p \
-  ~/.config/zsh \
-  ~/.local/share/zsh \
+  ~/.config/git \
+  ~/.config/himalaya \
   ~/.local/share/gem \
   ~/.local/share/sonar \
-  ~/.cache/zsh \
   ~/.cache/npm \
   ~/.cache/gem \
   ~/.local/state \
+  ~/.local/state/less \
+  ~/.local/state/node \
+  ~/.local/state/python \
+  ~/.docker \
   ~/.ssh
 
 chmod 700 ~/.ssh
 
-# ── Backups ───────────────────────────────────────────────────────────────────
-backup_if_exists() {
-  if [ -e "$1" ] && [ ! -L "$1" ]; then
-    echo "Backing up $1"
-    mv "$1" "$1.backup"
+# ── Symlink helper ────────────────────────────────────────────────────────────
+# link <source-relative-to-dotfiles> <target-absolute-path>
+# Backs up a pre-existing, non-symlink target to <target>.backup, then symlinks.
+link() {
+  local src="$DOTFILES_DIR/$1"
+  local dst="$2"
+
+  if [ ! -e "$src" ]; then
+    echo "! skipping $dst — source $src does not exist"
+    return
   fi
+
+  # Back up a real file/dir (but not an existing symlink) once.
+  if [ -e "$dst" ] && [ ! -L "$dst" ]; then
+    echo "Backing up $dst -> $dst.backup"
+    mv "$dst" "$dst.backup"
+  fi
+
+  mkdir -p "$(dirname "$dst")"
+  ln -sfn "$src" "$dst"
+  echo "linked $dst"
 }
 
-backup_if_exists ~/.zshenv
-backup_if_exists ~/.config/zsh/.zshrc
-backup_if_exists ~/.config/zsh/.zprofile
-backup_if_exists ~/.config/zsh/.zaliases
-backup_if_exists ~/.config/zsh/functions.zsh
-backup_if_exists ~/.config/nvim
-backup_if_exists ~/.config/tmux
-backup_if_exists ~/.config/starship.toml
-backup_if_exists ~/.ssh/config
-backup_if_exists ~/.gitconfig
-backup_if_exists ~/.docker/config.json
-backup_if_exists ~/.docker/daemon.json
-
 # ── Symlinks ──────────────────────────────────────────────────────────────────
-ln -sf "$DOTFILES_DIR/zsh/.zshenv" ~/.zshenv
-ln -sf "$DOTFILES_DIR/zsh/.zshrc" ~/.config/zsh/.zshrc
-ln -sf "$DOTFILES_DIR/zsh/.zprofile" ~/.config/zsh/.zprofile
-ln -sf "$DOTFILES_DIR/zsh/.zaliases" ~/.config/zsh/.zaliases
-ln -sf "$DOTFILES_DIR/zsh/functions.zsh" ~/.config/zsh/functions.zsh
-ln -sf "$DOTFILES_DIR/ssh/config" ~/.ssh/config
-ln -sf "$DOTFILES_DIR/git/config" ~/.gitconfig
-ln -sf "$DOTFILES_DIR/starship/starship.toml" ~/.config/starship.toml
-ln -sf "$DOTFILES_DIR/nvim" ~/.config/nvim
-ln -sf "$DOTFILES_DIR/tmux" ~/.config/tmux
-ln -sf "$DOTFILES_DIR/docker/config.json" ~/.docker/config.json
-ln -sf "$DOTFILES_DIR/docker/daemon.json" ~/.docker/daemon.json
+link ssh/config             ~/.ssh/config
+link git/config             ~/.config/git/config
+link git/ignore             ~/.config/git/ignore
+link fish                   ~/.config/fish
+link nvim                   ~/.config/nvim
+link tmux                   ~/.config/tmux
+link himalaya/config.toml   ~/.config/himalaya/config.toml
+link terraform/.terraformrc ~/.terraformrc
+link docker/config.json     ~/.docker/config.json
+link docker/daemon.json     ~/.docker/daemon.json
 
 chmod 600 ~/.ssh/config
 
-# ── SSH key ───────────────────────────────────────────────────────────────────
-if [ -f ~/.ssh/id_ed25519 ]; then
-  echo "Adding SSH key to keychain..."
-  ssh-add --apple-use-keychain ~/.ssh/id_ed25519 2>/dev/null
-else
-  echo "No SSH key found, generating one..."
-  ssh-keygen -t ed25519
+if [ "$LINKS_ONLY" = false ]; then
+  # SSH keys are managed by the 1Password SSH agent (see ~/.ssh/config).
+
+  # ── Fish plugins (fisher + tide, from fish/fish_plugins) ──────────────────────
+  if command -v fish &>/dev/null; then
+    echo "Installing fish plugins..."
+    fish -c '
+      if not functions -q fisher
+        curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source
+        and fisher install jorgebucaran/fisher
+      end
+      fisher update
+    '
+  fi
+
+  # ── fnm — default Node ────────────────────────────────────────────────────────
+  eval "$(fnm env)"
+  fnm install --lts
+  fnm use lts-latest
+
+  # ── Global npm packages ───────────────────────────────────────────────────────
+  npm install -g @anthropic-ai/claude-code
 fi
-
-# ── Git identity ──────────────────────────────────────────────────────────────
-if ! git config --global user.name &>/dev/null; then
-  read -p "Git name: " git_name
-  read -p "Git email: " git_email
-  git config --global user.name "$git_name"
-  git config --global user.email "$git_email"
-fi
-
-# ── fnm — default Node ────────────────────────────────────────────────────────
-eval "$(fnm env)"
-fnm install --lts
-fnm use lts-latest
-
-# ── Global npm packages ───────────────────────────────────────────────────────
-npm install -g @anthropic-ai/claude-code
 
 echo "✓ Dotfiles installed — restart your terminal"
