@@ -1,5 +1,20 @@
 [core]
     editor = nvim
+    pager = delta
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true      # n / N to move between diff sections
+    line-numbers = true
+    side-by-side = false # set true for split view
+
+[merge]
+    conflictStyle = zdiff3
+
+[diff]
+    colorMoved = default
 
 [init]
     defaultBranch = main
