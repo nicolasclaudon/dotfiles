@@ -1,1 +1,4 @@
 .memsearch/*
+
+# Himalaya email config — contains plaintext credentials, keep local only
+himalaya/
