@@ -100,12 +100,17 @@ chmod 700 ~/.ssh
 # ── Symlink helper ────────────────────────────────────────────────────────────
 # link <source-relative-to-dotfiles> <target-absolute-path>
 # Backs up a pre-existing, non-symlink target to <target>.backup, then symlinks.
+# Every target is recorded in LINK_TARGETS and verified at the end of the script,
+# so a missing source (e.g. a config dir not yet added to the repo) fails loudly
+# instead of being silently skipped.
+LINK_TARGETS=()
 link() {
   local src="$DOTFILES_DIR/$1"
   local dst="$2"
+  LINK_TARGETS+=("$dst")
 
   if [ ! -e "$src" ]; then
-    echo "! skipping $dst — source $src does not exist"
+    echo "✗ ERROR: cannot link $dst — source $src does not exist" >&2
     return
   fi
 
@@ -131,7 +136,6 @@ link ghostty ~/.config/ghostty
 link herdr ~/.config/herdr
 link nvim ~/.config/nvim
 link tmux ~/.config/tmux
-link himalaya/config.toml ~/.config/himalaya/config.toml
 link pi/models.json ~/.pi/agent/models.json
 link docker/config.json ~/.docker/config.json
 link docker/daemon.json ~/.docker/daemon.json
@@ -145,6 +149,26 @@ if [ "$LINKS_ONLY" = false ]; then
 fi
 
 chmod 600 ~/.ssh/config
+
+# ── Verify symlinks ───────────────────────────────────────────────────────────
+# Fail the install if any expected link is missing or broken, so a config that
+# silently didn't get linked (like fish previously) can't slip through.
+LINK_ERRORS=0
+for dst in "${LINK_TARGETS[@]}"; do
+  if [ ! -L "$dst" ]; then
+    echo "✗ $dst is not a symlink" >&2
+    LINK_ERRORS=1
+  elif [ ! -e "$dst" ]; then
+    echo "✗ $dst is a broken symlink" >&2
+    LINK_ERRORS=1
+  fi
+done
+if [ "$LINK_ERRORS" -eq 1 ]; then
+  echo "! Install incomplete — fix the errors above and re-run." >&2
+  exit 1
+fi
+
+echo "✓ All symlinks verified"
 
 if [ "$LINKS_ONLY" = false ]; then
   # SSH keys are managed by the 1Password SSH agent (see ~/.ssh/config).
