@@ -48,3 +48,6 @@ confirm-close-surface = false
 # otherwise swallows the macOS dead-key sequence.
 keybind = alt+n=text:~
 
+# Same deal for the pipe character (Option+Shift+L on this keyboard layout).
+keybind = alt+shift+l=text:|
+
