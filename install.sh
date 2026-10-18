@@ -61,17 +61,23 @@ if [ "$LINKS_ONLY" = false ]; then
     vlc \
     keka
 
-  # ── Default shell — fish ──────────────────────────────────────────────────────
-  FISH_PATH="$(command -v fish)"
-  if [ -n "$FISH_PATH" ]; then
-    if ! grep -qx "$FISH_PATH" /etc/shells; then
-      echo "Adding $FISH_PATH to /etc/shells..."
-      echo "$FISH_PATH" | sudo tee -a /etc/shells >/dev/null
-    fi
-    if [ "$SHELL" != "$FISH_PATH" ]; then
-      echo "Changing default shell to fish..."
-      chsh -s "$FISH_PATH"
-    fi
+fi
+
+# ── Default shell — fish ────────────────────────────────────────────────────
+# Runs unconditionally (even with --links-only) so re-running the script
+# can fix a shell that didn't get switched on a previous pass.
+FISH_PATH="$(command -v fish)"
+if [ -z "$FISH_PATH" ]; then
+  echo "! fish not found — skipping default shell change (install fish first)"
+else
+  if ! grep -qx "$FISH_PATH" /etc/shells; then
+    echo "Adding $FISH_PATH to /etc/shells..."
+    echo "$FISH_PATH" | sudo tee -a /etc/shells >/dev/null
+  fi
+  CURRENT_SHELL="$(dscl . -read "/Users/$(whoami)" UserShell 2>/dev/null | awk '{print $2}')"
+  if [ "$CURRENT_SHELL" != "$FISH_PATH" ]; then
+    echo "Changing default shell to fish..."
+    chsh -s "$FISH_PATH"
   fi
 fi
 
