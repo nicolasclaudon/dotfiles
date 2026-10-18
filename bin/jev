@@ -1,0 +1,61 @@
+#!/usr/bin/env fish
+#
+# jev-decide - call the Jev TypesafeAI /decide endpoint
+#
+# Usage:
+#   jev-decide '{"state": "...", "questions": {...}}'
+#
+# Options:
+#   -h, --help    Show this help and exit
+#   -n, --dry-run Show what would happen without calling the API
+#
+# Notes:
+#   - Reads the API key from 1Password and exports it as JEV_API_KEY
+#     (skipped if JEV_API_KEY is already set in the environment).
+#   - Update the `op item get` line below to match your actual 1Password
+#     item name/vault/field.
+
+function die
+    printf 'error: %s\n' "$argv" >&2
+    exit 1
+end
+
+function usage
+    awk 'NR==1{next} /^#/{sub(/^# ?/,""); print; next} {exit}' (status filename)
+end
+
+argparse h/help n/dry-run -- $argv
+or exit 1
+
+if set -q _flag_help
+    usage
+    exit 0
+end
+
+set -g dry_run false
+set -q _flag_dry_run; and set -g dry_run true
+
+function main
+    command -q curl; or die "curl is required"
+
+    set -q argv[1]; or die "usage: jev-decide '<json payload>'"
+    set payload $argv[1]
+
+    if not set -q JEV_API_KEY
+        command -q op; or die "op (1Password CLI) is required to load JEV_API_KEY"
+        set -gx JEV_API_KEY (op item get "JEV API" --vault Private --fields identifiant --reveal)
+    end
+
+    if test "$dry_run" = true
+        echo "[dry-run] JEV_API_KEY=$(string sub -l 8 $JEV_API_KEY)…"
+        echo "[dry-run] would POST: $payload"
+        return 0
+    end
+
+    curl https://jevtypesafeai.com/api/v1/decide \
+        -H "Authorization: Bearer $JEV_API_KEY" \
+        -H "Content-Type: application/json" \
+        -d "$payload"
+end
+
+main $argv

@@ -11,7 +11,7 @@
 theme = catppuccin-frappe.conf
 
 # Falls back to system monospace if not installed.
-font-family = JetBrains Mono
+font-family = JetBrainsMono Nerd Font
 font-size = 14
 # Slightly bolder glyphs, easier to read on Retina.
 font-thicken = true

@@ -5,19 +5,19 @@ set -e
 LINKS_ONLY=false
 for arg in "$@"; do
   case "$arg" in
-    -l | --links-only)
-      LINKS_ONLY=true
-      ;;
-    -h | --help)
-      echo "Usage: install.sh [--links-only|-l]"
-      echo "  --links-only, -l   Only create symlinks (skip brew, ssh, fnm, npm)"
-      exit 0
-      ;;
-    *)
-      echo "Unknown option: $arg" >&2
-      echo "Usage: install.sh [--links-only|-l]" >&2
-      exit 1
-      ;;
+  -l | --links-only)
+    LINKS_ONLY=true
+    ;;
+  -h | --help)
+    echo "Usage: install.sh [--links-only|-l]"
+    echo "  --links-only, -l   Only create symlinks (skip brew, ssh, fnm, npm)"
+    exit 0
+    ;;
+  *)
+    echo "Unknown option: $arg" >&2
+    echo "Usage: install.sh [--links-only|-l]" >&2
+    exit 1
+    ;;
   esac
 done
 
@@ -46,12 +46,13 @@ if [ "$LINKS_ONLY" = false ]; then
     jq yq glow tealdeer btop yazi \
     tmux lazygit gh \
     fnm pnpm uv \
-    terraform tflint \
-    himalaya fabric-ai \
+    fabric-ai \
+    herd \
     1password-cli
 
   # ── Casks ─────────────────────────────────────────────────────────────────────
   brew install --cask \
+    ghostty \
     orbstack \
     obsidian \
     1password \
@@ -76,7 +77,6 @@ fi
 # ── Directories ───────────────────────────────────────────────────────────────
 mkdir -p \
   ~/.config/git \
-  ~/.config/himalaya \
   ~/.local/share/gem \
   ~/.local/share/sonar \
   ~/.cache/npm \
@@ -114,16 +114,28 @@ link() {
 }
 
 # ── Symlinks ──────────────────────────────────────────────────────────────────
-link ssh/config             ~/.ssh/config
-link git/config             ~/.config/git/config
-link git/ignore             ~/.config/git/ignore
-link fish                   ~/.config/fish
-link nvim                   ~/.config/nvim
-link tmux                   ~/.config/tmux
-link himalaya/config.toml   ~/.config/himalaya/config.toml
-link terraform/.terraformrc ~/.terraformrc
-link docker/config.json     ~/.docker/config.json
-link docker/daemon.json     ~/.docker/daemon.json
+link ssh/config ~/.ssh/config
+link git/config ~/.config/git/config
+link git/ignore ~/.config/git/ignore
+link bin ~/bin
+link fish ~/.config/fish
+link claude ~/.config/claude
+link ghostty ~/.config/ghostty
+link herdr ~/.config/herdr
+link nvim ~/.config/nvim
+link tmux ~/.config/tmux
+link himalaya/config.toml ~/.config/himalaya/config.toml
+link pi/models.json ~/.pi/agent/models.json
+link docker/config.json ~/.docker/config.json
+link docker/daemon.json ~/.docker/daemon.json
+link launchd/com.homebrew.update.plist ~/Library/LaunchAgents/com.homebrew.update.plist
+
+# ── Homebrew auto-update LaunchAgent ─────────────────────────────────────────
+if [ "$LINKS_ONLY" = false ]; then
+  launchctl bootout "gui/$(id -u)" ~/Library/LaunchAgents/com.homebrew.update.plist 2>/dev/null || true
+  launchctl bootstrap "gui/$(id -u)" ~/Library/LaunchAgents/com.homebrew.update.plist
+  echo "✓ com.homebrew.update LaunchAgent loaded (daily at 11:00)"
+fi
 
 chmod 600 ~/.ssh/config
 
@@ -147,8 +159,11 @@ if [ "$LINKS_ONLY" = false ]; then
   fnm install --lts
   fnm use lts-latest
 
-  # ── Global npm packages ───────────────────────────────────────────────────────
-  npm install -g @anthropic-ai/claude-code
+  # ── Claude Code (official installer, installs to ~/.local/bin) ───────────────
+  curl -fsSL https://claude.ai/install.sh | bash
+
+  # ── pi coding agent (official installer, installs to ~/.local/bin) ───────────
+  curl -fsSL https://pi.dev/install.sh | sh
 fi
 
 echo "✓ Dotfiles installed — restart your terminal"

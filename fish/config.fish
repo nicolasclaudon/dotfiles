@@ -21,7 +21,10 @@ set -gx MANROFFOPT -c
 # ── Tidy $HOME: relocate tool history into ~/.local/state (XDG) ────────────────
 set -gx LESSHISTFILE $HOME/.local/state/less/history
 set -gx NODE_REPL_HISTORY $HOME/.local/state/node/repl_history
-set -gx PYTHON_HISTORY $HOME/.local/state/python/history   # Python 3.13+
+set -gx PYTHON_HISTORY $HOME/.local/state/python/history # Python 3.13+
+
+# Keep Claude Code config under XDG ~/.config instead of ~/.claude
+set -gx CLAUDE_CONFIG_DIR $HOME/.config/claude
 
 # ── Secrets via 1Password (example) ───────────────────────────────────────────
 # SSH keys are served by the 1Password agent, configured in ~/.ssh/config
@@ -79,13 +82,19 @@ if status is-interactive
     # fzf → fuzzy finder key bindings: Ctrl-R history, Ctrl-T files, Alt-C cd.
     fzf --fish | source
 
+    # Atuin id a replacement for navigtating the history
+    atuin init fish | source
+
     # More modern replacements (abbreviations — expand inline).
-    abbr du   dust    # disk usage, visual tree
-    abbr df   duf     # disk free, pretty table
-    abbr ps   procs   # process list
-    abbr topd ncdu    # interactive disk-usage browser
-    abbr md   glow    # render markdown in the terminal
-    abbr fabric fabric-ai   # fabric's binary is named fabric-ai
+    abbr du dust # disk usage, visual tree
+    abbr df duf # disk free, pretty table
+    abbr ps procs # process list
+    abbr topd ncdu # interactive disk-usage browser
+    abbr md glow # render markdown in the terminal
+    abbr rf 'rm -rf' # force-remove files/dirs recursively
+    abbr vim nvim # edit with neovim
+    abbr vi nvim # edit with neovim
+    abbr l ls
 
     # yazi → terminal file manager. `y` opens it and cd's to wherever you
     # navigated when you quit (press q). Use Q to quit without changing dir.
@@ -101,19 +110,21 @@ if status is-interactive
     # ── Abbreviations ─────────────────────────────────────────────────────────
     # Expand inline as you type, so the real command lands in your history.
     # git
-    abbr g    git
-    abbr gs   git status
-    abbr ga   git add
-    abbr gc   git commit
-    abbr gcm  git commit -m
-    abbr gco  git checkout
-    abbr gd   git diff
-    abbr gl   git log --oneline --graph --decorate
-    abbr gp   git push
-    abbr gpl  git pull
-    abbr gb   git branch
+    abbr g git
+    abbr gs git status
+    abbr ga git add
+    abbr gc git commit
+    abbr gcm git commit -m
+    abbr gco git checkout
+    abbr gd git diff
+    abbr gl git log --oneline --graph --decorate
+    abbr gp git push
+    abbr gpl git pull
+    abbr gb git branch
 
     # editor / misc
-    abbr v    nvim
-    abbr lg   lazygit
+    abbr v nvim
+    abbr lg lazygit
+
+    # fabric-ai: `fabric` wrapper in ~/bin injects the Capgemini API key
 end

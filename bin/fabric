@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+#
+# fabric - run Fabric-AI against the Capgemini enterprise Anthropic API
+#
+# Usage:
+#   fabric [fabric-ai args...]
+#
+# Options:
+#   -h, --help    Show this help and exit
+#   -n, --dry-run Show what would happen without launching fabric-ai
+#
+# Notes:
+#   - Reads the API key from 1Password and exports it as ANTHROPIC_AUTH_TOKEN
+#     (the Capgemini gateway requires an "Authorization: Bearer" header; the
+#     legacy x-api-key scheme returns 401).
+#   - Points fabric-ai at the Capgemini enterprise Anthropic endpoint.
+#   - ANTHROPIC_BASE_URL is also set in ~/.config/fabric/.env but an
+#     environment variable takes precedence in case the .env is absent.
+
+set -euo pipefail
+
+die() { printf 'error: %s\n' "$*" >&2; exit 1; }
+
+usage() {
+  awk 'NR==1{next} /^#/{sub(/^# ?/,""); print; next} {exit}' "$0"
+}
+
+dry_run=false
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -h|--help)    usage; exit 0 ;;
+    -n|--dry-run) dry_run=true; shift ;;
+    --)           shift; break ;;
+    *)            break ;;
+  esac
+done
+
+main() {
+  command -v fabric-ai >/dev/null || die "fabric-ai is required (brew install fabric-ai)"
+
+  # ── Load ANTHROPIC_AUTH_TOKEN from 1Password if not set ───────────────────
+  if [ -z "${ANTHROPIC_AUTH_TOKEN:-}" ]; then
+    command -v op >/dev/null || die "op (1Password CLI) is required to load ANTHROPIC_AUTH_TOKEN"
+    ANTHROPIC_AUTH_TOKEN="$(op item get "Anthropic Portfolio Token" \
+      --vault Private --fields identifiant --reveal)"
+    export ANTHROPIC_AUTH_TOKEN
+  fi
+
+  export ANTHROPIC_BASE_URL=https://anthropic.generative-eu.engine.capgemini.com
+
+  if $dry_run; then
+    echo "[dry-run] ANTHROPIC_BASE_URL=$ANTHROPIC_BASE_URL"
+    echo "[dry-run] ANTHROPIC_AUTH_TOKEN=${ANTHROPIC_AUTH_TOKEN:0:8}…"
+    echo "[dry-run] would run: fabric-ai $*"
+    return 0
+  fi
+
+  fabric-ai "$@"
+}
+
+main "$@"

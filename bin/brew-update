@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+#
+# brew-update - update, upgrade and clean up Homebrew silently
+#
+# Usage:
+#   brew-update [options]
+#
+# Options:
+#   -h, --help    Show this help and exit
+#   -n, --dry-run Show what would happen without doing it
+#
+# Notes:
+#   - Meant to be run daily via the com.homebrew.update LaunchAgent
+#     (see launchd/com.homebrew.update.plist), but safe to run by hand.
+#   - launchd jobs don't inherit a login shell's PATH, so brew is called
+#     by its full path.
+#   - Overwrites its own log on each run (no unbounded growth), keeping
+#     one previous run as a .1 backup.
+
+set -euo pipefail
+
+die() { printf 'error: %s\n' "$*" >&2; exit 1; }
+
+usage() {
+  awk 'NR==1{next} /^#/{sub(/^# ?/,""); print; next} {exit}' "$0"
+}
+
+dry_run=false
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -h|--help)    usage; exit 0 ;;
+    -n|--dry-run) dry_run=true; shift ;;
+    --)           shift; break ;;
+    -*)           die "unknown option: $1" ;;
+    *)            break ;;
+  esac
+done
+
+BREW="/opt/homebrew/bin/brew"
+LOG_DIR="$HOME/Library/Logs"
+LOG_FILE="$LOG_DIR/homebrew-update.log"
+
+main() {
+  [ -x "$BREW" ] || die "brew not found at $BREW"
+
+  if $dry_run; then
+    echo "[dry-run] would run: $BREW update && $BREW upgrade && $BREW cleanup -s"
+    echo "[dry-run] would log to: $LOG_FILE"
+    return 0
+  fi
+
+  mkdir -p "$LOG_DIR"
+  [ -f "$LOG_FILE" ] && mv "$LOG_FILE" "$LOG_FILE.1"
+
+  {
+    echo "=== $(date) ==="
+    "$BREW" update
+    "$BREW" upgrade
+    "$BREW" cleanup -s
+    echo "=== done ==="
+  } >"$LOG_FILE" 2>&1
+}
+
+main "$@"

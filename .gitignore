@@ -2,3 +2,17 @@
 
 # Himalaya email config — contains plaintext credentials, keep local only
 himalaya/
+
+# Claude Code runtime state (keep only settings.json, commands/, agents/, CLAUDE.md)
+claude/*
+!claude/settings.json
+!claude/commands/
+!claude/agents/
+!claude/CLAUDE.md
+
+# Serena MCP runtime cache (local tool state, not config)
+.serena/
+
+# herdr runtime logs/session state
+herdr/*.log
+herdr/session.json
