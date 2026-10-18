@@ -77,13 +77,19 @@ if status is-interactive
     abbr cat 'bat --paging=never'
 
     # zoxide → smart directory jumping. `cd` stays native; adds `z` and `zi`.
-    zoxide init fish | source
+    if command -q zoxide
+        zoxide init fish | source
+    end
 
     # fzf → fuzzy finder key bindings: Ctrl-R history, Ctrl-T files, Alt-C cd.
-    fzf --fish | source
+    if command -q fzf
+        fzf --fish | source
+    end
 
-    # Atuin id a replacement for navigtating the history
-    atuin init fish | source
+    # Atuin is a replacement for navigating the history
+    if command -q atuin
+        atuin init fish | source
+    end
 
     # More modern replacements (abbreviations — expand inline).
     abbr du dust # disk usage, visual tree
