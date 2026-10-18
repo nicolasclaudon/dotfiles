@@ -43,6 +43,7 @@ if [ "$LINKS_ONLY" = false ]; then
     fish neovim \
     eza bat fd fzf zoxide ripgrep \
     dust duf ncdu procs sd git-delta \
+    atuin \
     jq yq glow tealdeer btop yazi \
     tmux lazygit gh \
     fnm pnpm uv \
