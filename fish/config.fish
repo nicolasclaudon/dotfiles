@@ -91,6 +91,11 @@ if status is-interactive
         atuin init fish | source
     end
 
+    # switch to the correct node verrsion required by the directory
+    if command -q fnm
+        fnm env --use-on-cd --shell fish | source
+    end
+
     # More modern replacements (abbreviations — expand inline).
     abbr du dust # disk usage, visual tree
     abbr df duf # disk free, pretty table
@@ -134,3 +139,7 @@ if status is-interactive
 
     # fabric-ai: `fabric` wrapper in ~/bin injects the Capgemini API key
 end
+
+# Added by OrbStack: command-line tools and integration
+# This won't be added again if you remove it.
+source ~/.orbstack/shell/init2.fish 2>/dev/null || :
