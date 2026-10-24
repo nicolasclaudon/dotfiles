@@ -2,11 +2,19 @@
   "permissions": {
     "allow": [
       "Bash(grep *)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "model": "sonnet",
   "enabledPlugins": {
     "typescript-lsp@claude-plugins-official": true
   },
-  "theme": "dark"
+  "modelSettings": {
+    "claude-sonnet-5-5": {
+      "effortLevel": "medium"
+    }
+  },
+  "tui": "fullscreen",
+  "theme": "dark",
+  "editorMode": "normal"
 }

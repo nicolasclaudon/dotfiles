@@ -14,5 +14,4 @@ claude/*
 .serena/
 
 # herdr runtime logs/session state
-herdr/*.log
-herdr/session.json
+herdr/
