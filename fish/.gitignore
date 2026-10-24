@@ -1,6 +1,11 @@
 # Fisher-managed plugin files — regenerated from fish_plugins via `fisher update`.
 # Tracked instead: config.fish, fish_plugins (plugin list), fish_variables (Tide/prompt config).
+
+# Ignore Fisher-managed functions (but allow custom ones like pi.fish, fabric.fish)
+functions/*
+!functions/pi.fish
+!functions/fabric.fish
+
 completions/
 conf.d/
-functions/
 themes/
